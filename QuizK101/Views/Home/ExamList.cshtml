@@ -1,0 +1,20 @@
+﻿@model QuizK101.ViewModels.HomeVM
+@{
+    ViewBag.Title = "ExamList";
+}
+
+<h2>Exam List</h2>
+@if (Model.Exams.Count > 0)
+{
+<ul class="list-group">
+    @foreach (var exam in Model.Exams)
+    {
+        <li class="list-group-item"><a href="@Url.Action("QuizInfo","Quiz",new { id=exam.ID})">@exam.Name | @exam.ExamTime</a> </li>
+    }
+</ul>
+}
+else
+{
+    <p class="alert alert-warning">Heç bir imtahan tapılmadı</p>
+}
+

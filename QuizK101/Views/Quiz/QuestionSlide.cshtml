@@ -1,0 +1,28 @@
+﻿@model QuizK101.ViewModels.QuestionViewModel
+@if (Model != null && Model.Quiz.Exam.Questions.Count > 0 && Model.Quiz != null)
+{
+    if (!Model.Quiz.QuizActive)
+    {
+        <h4>@(Model.CurrentQuestion + 1)) @Model.QuizQuestion.Question.Name</h4>
+        <div class="answer">
+            <ul class="list-group">
+                @foreach (var answer in Model.QuizQuestion.Question.Answers)
+                {
+                    <li class="list-group-item">
+                        <input @(Model.QuizQuestion.myanswerID != null ? Model.QuizQuestion.myanswerID== answer.ID ? "checked" : "" : "") onclick="myAynswerFunc(@Model.QuizQuestion.questionID,@answer.ID,@Model.Quiz.ID)" class="answerId" type="radio" name="answer" value="@answer.ID-@Model.QuizQuestion.questionID" />
+                        <span>@answer.Name</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+    else
+    {
+        <p class="alert alert-warning">Imtahan bitib</p>
+    }
+}
+else
+{
+    <p class="alert alert-danger">Sual Tapılmadı</p>
+}
+

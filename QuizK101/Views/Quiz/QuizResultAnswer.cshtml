@@ -1,0 +1,31 @@
+﻿@model QuizK101.ViewModels.ResultQuizVM
+@{
+    ViewBag.Title = "QuizResultAnswer";
+}
+@{ 
+    int count = 1;
+}
+    <div class="text-center">
+        <h2 class="text-center">@Model.QuizeSingle.Exam.Name - @Model.QuizeSingle.Score bal</h2>
+        <em>Start:@Model.QuizeSingle.QuizStart.ToString("dd - MMMM - yyyy  HH:mm:ss") <br />End:@Model.QuizeSingle.QuizEnd.ToString("dd-MMMM-yyyy  HH:mm:ss")</em>
+    </div>
+@foreach (var question in Model.QuizeSingle.QuizQuestions)
+{
+    <h4>@count) @question.Question.Name</h4>
+    <div class="answer">
+        <ul class="list-group">
+            @foreach (var answer in question.Question.Answers)
+            {
+                var myAnswer = question.myanswerID==answer.ID;
+                var correctAnsw = question.Question.CorrectAnswerID == answer.ID;
+                <li class="@(correctAnsw? "myTextSuccess":"") list-group-item @(myAnswer? "myTextError":"")">
+                    <input  disabled type="checkbox" name="name" @(correctAnsw? "checked":"") />
+                    <input  @(myAnswer?"checked":"disabled") class="answerId" type="radio" />
+                    <span>@answer.Name</span>
+                </li>
+            }
+        </ul>
+    </div>
+    count++;
+}
+

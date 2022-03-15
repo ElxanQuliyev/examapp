@@ -1,0 +1,93 @@
+﻿@model QuizK101.ViewModels.QuestionViewModel
+@{
+    ViewBag.Title = "StartExam";
+}
+@if (Model.Quiz!=null && Model.Quiz.Exam.Questions.Count()>0)
+{
+
+    @*if (!Model.Quiz.QuizActive)
+    {
+        <script>
+            window.history.pushState({}, document.title, "/" + "Quiz/StartExam");
+            window.history.replaceState({}, document.title, "/" + "Quiz/EndQuiz");
+        </script>
+    }*@
+    <h2 class="text-center">@Model.Quiz.Exam.Name</h2>
+    <div id="AllQuestion">
+        @*@{ Html.RenderAction("QuestionSlide");}*@
+    </div>
+    @*@(Model.CurrentQuestion == 0 ? "disabled" : "")*@
+    @*@(Model.CurrentQuestion >= Model.TotalQuestionCount - 1 ? "disabled" : "")*@
+    <button class="btn btn-primary btnSlide" disabled data-exam="-1">Geri</button>
+    <button class="btn btn-primary btnSlide" data-exam="1">İrəli</button>
+    <span id="time"></span>
+    <br />
+    <a href="@Url.Action("EndQuiz", "Quiz", new { quizId = Model.Quiz.ID })" class="btn btn-danger btn-lg">Imtahanı bitir</a>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.min.js"></script>
+    <script>
+    let currentQuest = 0;
+    let totalCount =@Model.TotalQuestionCount;
+    //ShowQuestion(currentQuest)
+     ShowQuestion(currentQuest)
+    $(".btnSlide").click(function (e) {
+        currentQuest += Number($(this).attr("data-exam"))
+        console.log(currentQuest, totalCount)
+        if (currentQuest >= totalCount - 1 || currentQuest==0) {
+            $(this).prop("disabled", true); // Element(s) are now enabled.
+        }
+        else {
+            $(".btnSlide").removeAttr("disabled")
+        }
+        ShowQuestion(currentQuest)
+    })
+    function myAynswerFunc(questionId, answerId,quizId) {
+        let data = {
+            QuestionId: questionId,
+            AnswerId: answerId,
+            QuizId:quizId
+        }
+        $.post('@Url.Action("SubmitAnswer", "Quiz")',data)
+        }
+     function ShowQuestion(examData) {
+            $.ajax({
+                url: "@Url.Action("QuestionSLide", "Quiz", new { ExamId = Model.Quiz.ExamID})",
+                data: {
+                    skip: examData,
+                    QuizId:'@Model.Quiz.ID'
+                },
+                method: "Get",
+                dataType: "HTML",
+                success: function (res) {
+                    $("#AllQuestion").html(res);
+
+                }
+            })
+        }
+        function timer(time) {
+            time--;
+            if (time < 0) {
+                time = 0;
+            }
+            m = Math.floor(time / 60);
+            s = Math.floor(time - (m * 60));
+            $('#time').html(' ( ' + m + ' dəqiqə ' + s + ' saniyə )');
+            t = time;
+            out = setTimeout("timer(t)", 1000);
+            if (t <= 0) {
+                location.href = '@Url.Action("EndQuiz", "Quiz", new { quizId = Model.Quiz.ID })';
+            }
+        }
+
+        $(document).ready(function () {
+            console.log()
+            setTimeout(function () {
+                timer('@((Model.Quiz.QuizEnd - DateTime.Now).TotalHours * 3600)')
+            }, 0);
+        })
+    </script>
+}
+else
+{
+    <p class="alert alert-danger">Sual Tapılmadı</p>
+}

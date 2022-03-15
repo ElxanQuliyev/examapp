@@ -1,0 +1,53 @@
+﻿@model QuizK101.Areas.Dashboard.ViewModel.ShowQestionViewModel
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Areas/Dashboard/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Questions</h2>
+<hr />
+<h4>@Model.Exam.Name</h4>
+@if (Model.Questions.Count > 0)
+{
+    <table class="table">
+        <tr>
+
+            <th>Question Name</th>
+            <th>
+                Answer Count
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model.Questions)
+        {
+            <tr>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Answers.Count)
+                </td>
+
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                </td>
+            </tr>
+        }
+
+    </table>
+
+}
+else
+{
+    <p class="alert alert-warning">Question not found!</p>
+}
+
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

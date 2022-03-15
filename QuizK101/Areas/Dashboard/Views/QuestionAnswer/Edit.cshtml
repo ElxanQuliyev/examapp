@@ -1,0 +1,143 @@
+﻿@model QuizK101.Areas.Dashboard.ViewModel.EditQuestionViewModel
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Areas/Dashboard/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>Edit</h2>
+
+<form id="QuestionForm" method="post">
+    @Html.HiddenFor(x=>x.Question.ID)
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.Question.Exam, "ExamID", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("ExamID", null, htmlAttributes: new { @id = "selectedSubject", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Question.ExamID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        
+        <div class="form-group">
+            @Html.LabelFor(model => model.Question.Name, "Question Name", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Question.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Question.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("Answer", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="row align-items-center">
+                    <div class="col-md-10">
+                        <input class="myAnswer form-control" type="text" name="answer" />
+                        @Html.ValidationMessageFor(model => model.Question.Answers, "", new { @class = "text-danger" })
+
+                    </div>
+                    <div class="col-md-2 text-right d-flex align-items-center">
+                        <input class="submitAnswer btn btn-primary" type="button" value="Add Answer" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <table id="answerTable" class="table table-bordered table-dark my-4">
+                            <thead>
+                                <tr>
+                                    <th>Answer</th>
+                                    <th>Correct Answer</th>
+                                    <th>#</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Question.Answers.Count > 0)
+                                {
+                                    foreach (var answer in Model.Question.Answers)
+                                    {
+                                        <tr>
+                                            <td width="70%" class="answerName">@answer.Name</td>
+                                            <td>
+                                                <input class="answer" type="hidden" name="answers" value="@(answer.Name)~" />
+                                                <input @(Model.Question.CorrectAnswerID==answer.ID?"checked":"") class="myAnswer" value="true" type="radio" name="myAnswer" />
+                                            </td>
+                                            <td>
+                                                <input type="button" value="Delete" class="btn btn-danger removeAnswer" />
+                                            </td>
+                                        </tr>
+
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <input class="btn btn-primary btn-lg" id="btnQuestionAdd" type="submit" value="Edit Question" />
+        </div>
+    </div>
+</form>
+
+
+@section adminScript{
+    <script>
+        $(".submitAnswer").click(function () {
+            const answerVal = $(".myAnswer").val();
+            if (answerVal.trim() != "") {
+                $("#answerTable tbody").html(
+                    $("#answerTable tbody").html() +
+                    `
+                      <tr>
+                        <td width="70%" class="answerName">${answerVal}</td>
+                        <td>
+                            <input class="answer" type="hidden" name="answers" value="${answerVal}~" />
+                            <input class="myAnswer" value="true" type="radio" name="myAnswer"/>
+                        </td>
+                        <td>
+                            <input type="button" value="Delete" class="btn btn-danger removeAnswer" />
+                        </td>
+                    </tr>
+                `)
+
+                $(".removeAnswer").click(function () {
+                    $(this).parents("tr").remove()
+                })
+                $(".myAnswer").on("change", function () {
+                    const answerVal = $(this).prev().val();
+
+                    if ($(this).prop("checked")) {
+                        for (var ans of $(".answer")) {
+                            let valInp = $(ans).val().replace("true", "")
+                            $(ans).val(valInp)
+                        }
+                        $(this).prev().val(answerVal + true)
+                    }
+                })
+                $(".myAnswer").val("")
+
+            }
+
+            $(".myAnswer").val("");
+        })
+        $(".removeAnswer").click(function () {
+            $(this).parents("tr").remove()
+        })
+        $(".myAnswer").on("change", function () {
+            const answerVal = $(this).prev().val();
+
+            if ($(this).prop("checked")) {
+                for (var ans of $(".answer")) {
+                    let valInp = $(ans).val().replace("true", "")
+                    $(ans).val(valInp)
+                }
+                $(this).prev().val(answerVal + true)
+            }
+        })
+    </script>
+
+}
+
+
